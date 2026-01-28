@@ -8,11 +8,15 @@ import pandas as pd
 import pdfplumber
 import re
 import io
+import logging
 from datetime import datetime
 from pathlib import Path
 from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment, Font, Border, Side, PatternFill
+
+# Configure logging
+logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
 # Page config
 st.set_page_config(
@@ -392,7 +396,7 @@ def log_activity(user: str, action: str, details: str = ""):
     }
     st.session_state.processing_log.append(log_entry)
     # In log ra console (sẽ hiển thị trong Streamlit Cloud logs)
-    print(f"[{timestamp}] User: {user} | Action: {action} | {details}")
+    logging.info(f"User: {user} | Action: {action} | {details}")
 
 
 # ==================== STEP INDICATOR ====================
@@ -699,3 +703,25 @@ st.markdown(
     f"<div style='text-align: center; color: #888; font-size: 0.9rem;'>Made with ❤️ by Trần Duy Quang | {datetime.now().strftime('%Y-%m-%d')}</div>",
     unsafe_allow_html=True
 )
+
+# Admin Log Viewer
+with st.sidebar:
+    st.markdown("---")
+    st.markdown("### 🛡️ Admin Panel")
+    with st.expander("📝 Nhật ký hoạt động", expanded=False):
+        if st.session_state.processing_log:
+            log_df = pd.DataFrame(st.session_state.processing_log)
+            # Hiển thị log ngược (mới nhất lên đầu)
+            st.dataframe(
+                log_df.iloc[::-1], 
+                use_container_width=True, 
+                hide_index=True,
+                column_config={
+                    "timestamp": "Thời gian",
+                    "user": "Người dùng",
+                    "action": "Hành động",
+                    "details": "Chi tiết"
+                }
+            )
+        else:
+            st.info("Chưa có ghi nhận nào")
