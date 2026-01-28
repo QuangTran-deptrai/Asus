@@ -436,8 +436,21 @@ def render_step_indicator():
 st.markdown('<div class="main-header">📄 ASUS Credit Note Extractor</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-header">Trích xuất dữ liệu từ PDF Credit Note sang Excel</div>', unsafe_allow_html=True)
 
-# User badge (nếu đã đăng nhập)
+# User badge (nếu đã đăng nhập) & Sidebar Logout
 if st.session_state.user_name:
+    # Sidebar Info
+    with st.sidebar:
+        st.write(f"👤 **{st.session_state.user_name}**")
+        if st.button("🚪 Đăng xuất", key="sidebar_logout", use_container_width=True):
+            log_activity(st.session_state.user_name, "LOGOUT", "User logged out")
+            st.session_state.current_step = 1
+            st.session_state.user_name = ""
+            st.session_state.uploaded_files = []
+            st.session_state.processed_data = None
+            st.rerun()
+        st.markdown("---")
+
+    # Main area badge
     st.markdown(f"""
     <div style="text-align: right; margin-bottom: 1rem;">
         <span class="user-badge">👤 {st.session_state.user_name}</span>
@@ -704,24 +717,4 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Admin Log Viewer
-with st.sidebar:
-    st.markdown("---")
-    st.markdown("### 🛡️ Admin Panel")
-    with st.expander("📝 Nhật ký hoạt động", expanded=False):
-        if st.session_state.processing_log:
-            log_df = pd.DataFrame(st.session_state.processing_log)
-            # Hiển thị log ngược (mới nhất lên đầu)
-            st.dataframe(
-                log_df.iloc[::-1], 
-                use_container_width=True, 
-                hide_index=True,
-                column_config={
-                    "timestamp": "Thời gian",
-                    "user": "Người dùng",
-                    "action": "Hành động",
-                    "details": "Chi tiết"
-                }
-            )
-        else:
-            st.info("Chưa có ghi nhận nào")
+
