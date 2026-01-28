@@ -1,0 +1,25 @@
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Output files
+*.xlsx
+output_text/
+input/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/secrets.toml
